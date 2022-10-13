@@ -1,6 +1,7 @@
 using System;
 using System.IO.Compression;
 using System.IO;
+using System.Linq;
 using System.Threading;
 //using System.Windows.Forms;
 using System.Net;
@@ -18,54 +19,60 @@ public static class Program
     public static void Main()
     {
         string[] args = System.Environment.GetCommandLineArgs();
-        Console.WriteLine(args.Length);
-        if (args.Length != 2) Environment.Exit(1);
+        Console.Error.WriteLine(args.Length);
+        if (args.Length < 2)
+        {
+            Console.Error.WriteLine("Please specify program name.");
+            Environment.Exit(1);
+        }
+        ArraySegment<string> arySeg = new ArraySegment<string>(args, 2, args.Length-2);
+        string[] argsSlice = arySeg.ToArray();
         //Application.Run(new Form1());
         //if (JsonUrl == null) return;
         string JsonUrl = $"https://github.com/spider-explorer/spider-next/releases/download/64bit/{args[1]}.json";
         //                 https://github.com/spider-explorer/spider-next/releases/download/64bit/spider-next.json
-        RunSelectedProgram(JsonUrl);
+        RunSelectedProgram(JsonUrl, argsSlice);
     }
-    static void RunSelectedProgram(string jsonUrl)
+    static void RunSelectedProgram(string jsonUrl, string[] args)
     {
         var appName = GetFileBaseNameFromUrl(jsonUrl);
-        Console.WriteLine(appName);
+        Console.Error.WriteLine(appName);
         var json = GetStringFromUrl(jsonUrl);
         var root = System.Text.Json.JsonDocument.Parse(json).RootElement;
         var version = root.GetProperty("version").GetString();
         var url = root.GetProperty("url").GetString();
         var mainDll = root.GetProperty("main_dll").GetString();
         var mainClass = root.GetProperty("main_class").GetString();
-        var console = root.GetProperty("console").GetBoolean();
-        Console.WriteLine(version);
-        Console.WriteLine(url);
+        //var console = root.GetProperty("console").GetBoolean();
+        Console.Error.WriteLine(version);
+        Console.Error.WriteLine(url);
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        Console.WriteLine(profilePath);
+        Console.Error.WriteLine(profilePath);
         var installPath = $"{profilePath}\\.javacommons\\.software\\{appName}\\{version}";
-        Console.WriteLine(installPath);
+        Console.Error.WriteLine(installPath);
         if (!Directory.Exists(installPath))
         {
-            Console.WriteLine($"{installPath} が存在しません");
+            Console.Error.WriteLine($"{installPath} が存在しません");
             DirectoryInfo di = new DirectoryInfo(installPath);
             DirectoryInfo diParent = di.Parent;
             string parent = diParent.FullName;
-            Console.WriteLine($"{parent} を準備します");
+            Console.Error.WriteLine($"{parent} を準備します");
             Directory.CreateDirectory(parent);
             string destinationPath = $"{parent}\\{version}.zip";
             FileInfo fi = new FileInfo(destinationPath);
             if (!fi.Exists)
             {
-                Console.WriteLine($"{destinationPath} にダウンロードします");
+                Console.Error.WriteLine($"{destinationPath} にダウンロードします");
                 DownloadBinaryFromUrl(url, destinationPath);
-                Console.WriteLine($"{destinationPath} にダウンロードが完了しました");
+                Console.Error.WriteLine($"{destinationPath} にダウンロードが完了しました");
             }
-            Console.WriteLine($"{installPath} に展開します");
+            Console.Error.WriteLine($"{installPath} に展開します");
             ZipFile.ExtractToDirectory(destinationPath, installPath);
-            Console.WriteLine($"{installPath} に展開しました");
+            Console.Error.WriteLine($"{installPath} に展開しました");
         }
-        Console.WriteLine($"{mainClass} を起動します");
+        Console.Error.WriteLine($"{mainClass} を起動します");
         Thread.Sleep(1000);
-        StartAssembly($"{installPath}\\{mainDll}", mainClass, version, console);
+        StartAssembly($"{installPath}\\{mainDll}", mainClass, version, args);
     }
     static string GetFileBaseNameFromUrl(string url)
     {
@@ -101,13 +108,13 @@ public static class Program
             }
         }
     }
-    static void StartAssembly(string path, string mainClass, string version, bool console)
+    static void StartAssembly(string path, string mainClass, string version, string[] args)
     {
         Assembly test01Dll = Assembly.LoadFrom(path);
         var appType = test01Dll.GetType(mainClass);
         if (appType == null)
         {
-            Console.WriteLine("(appType == null)");
+            Console.Error.WriteLine("(appType == null)");
             return;
         }
         var setVersion = appType.GetMethod("SetVersion", BindingFlags.Public | BindingFlags.Static);
@@ -116,13 +123,13 @@ public static class Program
             setVersion.Invoke(null, new object[] { version });
         }
         var main = appType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-        if (main == null) Console.WriteLine("(main == null)");
-        if (!console) FreeConsole();
-        main.Invoke(null, new object[] { });
+        if (main == null) Console.Error.WriteLine("(main == null)");
+        //if (!console) FreeConsole();
+        main.Invoke(null, new object[] { args });
 #if false
         if (console)
         {
-            Console.WriteLine("プログラムが終了しました。何かキーを押して下さい: ");
+            Console.Error.WriteLine("プログラムが終了しました。何かキーを押して下さい: ");
             Console.ReadKey();
         }
 #endif
