@@ -10,15 +10,20 @@ using System.Text;
 namespace SpiderNextBoot;
 public static class Program
 {
-    public static string JsonUrl = null;
+    ////public static string JsonUrl = null;
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
     [STAThread]
     public static void Main()
     {
-        Application.Run(new Form1());
-        if (JsonUrl == null) return;
+        string[] args = System.Environment.GetCommandLineArgs();
+        Console.WriteLine(args.Length);
+        if (args.Length != 2) Environment.Exit(1);
+        //Application.Run(new Form1());
+        //if (JsonUrl == null) return;
+        string JsonUrl = $"https://github.com/spider-explorer/spider-next/releases/download/64bit/{args[1]}.json";
+        //                 https://github.com/spider-explorer/spider-next/releases/download/64bit/spider-next.json
         RunSelectedProgram(JsonUrl);
     }
     static void RunSelectedProgram(string jsonUrl)
@@ -114,11 +119,13 @@ public static class Program
         if (main == null) Console.WriteLine("(main == null)");
         if (!console) FreeConsole();
         main.Invoke(null, new object[] { });
+#if false
         if (console)
         {
             Console.WriteLine("プログラムが終了しました。何かキーを押して下さい: ");
             Console.ReadKey();
         }
+#endif
     }
     public static void FreeConsole()
     {
