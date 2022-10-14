@@ -1,13 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Dotnet CLI tool allowing you to run C# applets.</Description>
-    <Version>2022.1013.1740.37</Version>
+    <Version>2022.1014.1134.19</Version>
     <Authors>javacommons</Authors>
-    <PackageId>run-exe</PackageId>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <AssemblyName>run</AssemblyName>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Exe</OutputType>
-    <PackageTags></PackageTags>
     <PackageProjectUrl>https://github.com/run-exe/run-exe</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
@@ -15,8 +12,6 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <PackAsTool>false</PackAsTool>
-    <IsPackable>true</IsPackable>
     <LangVersion>10.0</LangVersion>
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>disable</Nullable>
@@ -25,7 +20,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <ApplicationIcon>tarantula.ico</ApplicationIcon>
     <RootNamespace>Run.Exe</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <Reference Include="Microsoft.CSharp" />
