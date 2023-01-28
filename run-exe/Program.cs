@@ -2,15 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
-using System.Linq;
 using System.Threading;
-//using System.Windows.Forms;
 using System.Net;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
 using System.Text;
-using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace Run.Exe;
@@ -23,7 +17,7 @@ public static class Program
         Console.Error.WriteLine(args.Length);
         if (args.Length < 1)
         {
-            MessageBox.Show("Please specify program name.");
+            Console.Error.WriteLine("Please specify program name.");
             Environment.Exit(1);
         }
         string appName = args[0];

@@ -4,6 +4,7 @@ ts=`date "+%Y.%m%d.%H%M.%S"`
 version="${ts}"
 sed -i -e "s/<Version>.*<\/Version>/<Version>${version}<\/Version>/g" run-exe.csproj
 rm -rf obj bin
-dotnet build -c Release run-exe.csproj
+#dotnet build -c Release run-exe.csproj
+dotnet pack -c release -o nupkg run-exe.csproj
 rm -rf *.nupkg
 cp -rp bin/Release/*.nupkg .
